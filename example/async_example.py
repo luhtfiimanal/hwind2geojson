@@ -5,7 +5,7 @@ This example shows how to process multiple HWIND files concurrently using asynci
 
 import asyncio
 from pathlib import Path
-from converhwind import HwindConverter
+from hwind2geojson import HwindConverter
 
 async def process_file(hwind_file: Path) -> dict:
     """Process a single HWIND file asynchronously."""

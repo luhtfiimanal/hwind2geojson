@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import shutil
-from converhwind import HwindConverter
+from hwind2geojson import HwindConverter
 
 @pytest.fixture
 def sample_hwind_file():

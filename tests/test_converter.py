@@ -6,7 +6,7 @@ import os
 import json
 from pathlib import Path
 import pytest
-from converhwind import HwindConverter
+from hwind2geojson import HwindConverter
 
 @pytest.fixture
 def sample_hwind_file():

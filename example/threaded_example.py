@@ -6,7 +6,7 @@ This example shows how to process multiple HWIND files concurrently.
 import glob
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from converhwind import HwindConverter
+from hwind2geojson import HwindConverter
 
 def process_file(hwind_file: Path) -> dict:
     """Process a single HWIND file."""
