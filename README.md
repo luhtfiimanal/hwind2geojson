@@ -18,11 +18,14 @@ This project uses `uv` for dependency management. To install:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/converhwind.git
-cd converhwind
+git clone https://github.com/luhtfiimanal/hwind2geojson
+cd hwind2geojson
 
 # Install dependencies
-uv add deps
+uv sync
+
+# Run the tool
+uv run pytest
 ```
 
 ## Usage
