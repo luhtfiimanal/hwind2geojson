@@ -30,6 +30,19 @@ uv run pytest
 
 ## Usage
 
+### Installation in Other Projects
+
+You can install this package directly from GitHub:
+
+```bash
+uv pip install git+https://github.com/luhtfiimanal/hwind2geojson.git
+```
+
+Or install a specific version:
+```bash
+uv pip install git+https://github.com/luhtfiimanal/hwind2geojson.git@v0.1.0
+```
+
 ### Basic Usage
 
 ```python
@@ -61,6 +74,67 @@ geojson_data = converter.convert_to_geojson(
 ```bash
 uv run hwind_converter.py input_file.hwind
 ```
+
+## Examples
+
+### Advanced Examples
+
+The package includes examples for both threaded and async usage in the `example` directory:
+
+#### Threaded Example
+Process multiple HWIND files concurrently using threads:
+
+```python
+from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
+from converhwind import HwindConverter
+
+# Process files concurrently
+with ThreadPoolExecutor() as executor:
+    hwind_files = Path('.').glob('*.hwind')
+    futures = [
+        executor.submit(
+            HwindConverter().convert_to_geojson,
+            hwind_file
+        )
+        for hwind_file in hwind_files
+    ]
+```
+
+#### Async Example
+Process HWIND files in an async environment:
+
+```python
+import asyncio
+from pathlib import Path
+from converhwind import HwindConverter
+
+async def process_files():
+    converter = HwindConverter()
+    hwind_files = Path('.').glob('*.hwind')
+    
+    # Convert files concurrently
+    tasks = [
+        asyncio.create_task(
+            asyncio.to_thread(
+                converter.convert_to_geojson,
+                hwind_file
+            )
+        )
+        for hwind_file in hwind_files
+    ]
+    
+    return await asyncio.gather(*tasks)
+
+# Run async code
+results = asyncio.run(process_files())
+```
+
+For complete examples, see:
+- [threaded_example.py](example/threaded_example.py): Multi-threaded processing example
+- [async_example.py](example/async_example.py): Async processing example
+
+Both examples demonstrate safe concurrent processing of multiple HWIND files.
 
 ## Output Format
 

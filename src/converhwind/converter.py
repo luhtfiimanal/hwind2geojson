@@ -7,9 +7,34 @@ import json
 from pathlib import Path
 from typing import Union, Dict, Optional
 import logging
+import threading
+from contextlib import contextmanager
+
+@contextmanager
+def file_lock(path: Union[str, Path]):
+    """Thread-safe file access using a lock per file path."""
+    path = str(path)
+    if not hasattr(file_lock, '_locks'):
+        file_lock._locks = {}
+        file_lock._lock = threading.Lock()
+    
+    with file_lock._lock:
+        if path not in file_lock._locks:
+            file_lock._locks[path] = threading.Lock()
+        lock = file_lock._locks[path]
+    
+    with lock:
+        yield
 
 class HwindConverter:
-    """Class for converting HWIND data to GeoJSON format"""
+    """Class for converting HWIND data to GeoJSON format.
+    
+    This class is thread-safe. Multiple threads can safely call convert_to_geojson
+    concurrently, even on the same input/output files, as file operations are protected
+    by locks.
+    """
+    
+    file_lock = staticmethod(file_lock)
     
     @staticmethod
     def convert_to_geojson(
@@ -19,6 +44,9 @@ class HwindConverter:
     ) -> Dict:
         """
         Convert HWIND XML data to GeoJSON format.
+        
+        This method is thread-safe. Multiple threads can safely call this method
+        concurrently, even on the same input/output files.
         
         Args:
             input_path: Path to the input HWIND XML file
@@ -38,12 +66,13 @@ class HwindConverter:
         if not input_path.exists():
             raise FileNotFoundError(f"Input file not found: {input_path}")
             
-        # Parse the XML file
-        try:
-            tree = ET.parse(input_path)
-            root = tree.getroot()
-        except ET.ParseError as e:
-            raise ET.ParseError(f"Failed to parse XML file: {e}")
+        # Parse the XML file with file lock
+        with HwindConverter.file_lock(input_path):
+            try:
+                tree = ET.parse(input_path)
+                root = tree.getroot()
+            except ET.ParseError as e:
+                raise ET.ParseError(f"Failed to parse XML file: {e}")
             
         # Get sensor info
         sensor_info = root.find('.//sensorinfo')
@@ -124,9 +153,14 @@ class HwindConverter:
             else:
                 output_path = Path(output_path)
                 
-            with open(output_path, 'w') as f:
-                json.dump(geojson, f, indent=2)
-            logging.info(f"Successfully saved GeoJSON to {output_path}")
+            # Ensure directory exists
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Write with file lock
+            with HwindConverter.file_lock(output_path):
+                with open(output_path, 'w') as f:
+                    json.dump(geojson, f, indent=2)
+                logging.info(f"Successfully saved GeoJSON to {output_path}")
             
         return geojson
 
