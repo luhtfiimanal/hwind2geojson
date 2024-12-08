@@ -1,4 +1,4 @@
-# ConvertHWIND
+# HWIND2GeoJSON
 
 A Python tool for converting HWIND radar data to GeoJSON format. This tool processes HWIND XML files containing wind data from radar measurements and converts them into GeoJSON format, making it easy to visualize and analyze wind patterns on maps.
 
@@ -40,13 +40,13 @@ uv pip install git+https://github.com/luhtfiimanal/hwind2geojson.git
 
 Or install a specific version:
 ```bash
-uv pip install git+https://github.com/luhtfiimanal/hwind2geojson.git@v0.1.0
+uv pip install git+https://github.com/luhtfiimanal/hwind2geojson.git@v0.1.2
 ```
 
 ### Basic Usage
 
 ```python
-from hwind_converter import HwindConverter
+from hwind2geojson import HwindConverter
 
 # Convert and save to file (automatically uses .geojson extension)
 converter = HwindConverter()
@@ -87,7 +87,7 @@ Process multiple HWIND files concurrently using threads:
 ```python
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
-from converhwind import HwindConverter
+from hwind2geojson import HwindConverter
 
 # Process files concurrently
 with ThreadPoolExecutor() as executor:
@@ -107,7 +107,7 @@ Process HWIND files in an async environment:
 ```python
 import asyncio
 from pathlib import Path
-from converhwind import HwindConverter
+from hwind2geojson import HwindConverter
 
 async def process_files():
     converter = HwindConverter()
